@@ -7,7 +7,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     if(isset($_POST['addToCart'])) {
         $itemId = $_POST["itemId"];
         $size = $_POST["size"] ? $_POST["size"] : 12;
-        $existSql = "SELECT * FROM `viewcart` WHERE pizzaId = '$itemId' AND `userId`='$userId'";
+        $existSql = "SELECT * FROM `viewcart` WHERE pizzaId = '$itemId' AND `userId`='$userId' AND status_id = 1";
         $result = mysqli_query($conn, $existSql);
         $numExistRows = mysqli_num_rows($result);
         if($numExistRows > 0){

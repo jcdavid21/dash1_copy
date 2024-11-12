@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: Nov 06, 2024 at 01:43 PM
+-- Host: localhost
+-- Generation Time: Nov 12, 2024 at 04:34 PM
 -- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- PHP Version: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -87,13 +87,20 @@ CREATE TABLE `contactreply` (
 --
 
 CREATE TABLE `deliverydetails` (
-  `id` int(21) NOT NULL,
-  `orderId` int(21) NOT NULL,
-  `deliveryBoyName` varchar(35) NOT NULL,
-  `deliveryBoyPhoneNo` bigint(25) NOT NULL,
-  `deliveryTime` int(200) NOT NULL COMMENT 'Time in minutes',
+  `id` int(11) NOT NULL,
+  `orderId` int(11) NOT NULL,
+  `deliveryBoyName` varchar(255) NOT NULL,
+  `deliveryBoyPhoneNo` varchar(255) NOT NULL,
+  `deliveryTime` time NOT NULL,
   `dateTime` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `deliverydetails`
+--
+
+INSERT INTO `deliverydetails` (`id`, `orderId`, `deliveryBoyName`, `deliveryBoyPhoneNo`, `deliveryTime`, `dateTime`) VALUES
+(436021, 8, 'Lugo', '09565535401', '19:00:00', '2024-11-12 22:25:13');
 
 -- --------------------------------------------------------
 
@@ -102,18 +109,25 @@ CREATE TABLE `deliverydetails` (
 --
 
 CREATE TABLE `orderitems` (
-  `id` int(21) NOT NULL,
-  `orderId` int(21) NOT NULL,
-  `pizzaId` int(21) NOT NULL,
-  `itemQuantity` int(100) NOT NULL
+  `order_id` int(11) NOT NULL,
+  `track_id` int(11) NOT NULL,
+  `cartItemId` int(11) NOT NULL,
+  `delivery_date` date DEFAULT NULL,
+  `delivery_time` time DEFAULT NULL,
+  `address` varchar(255) NOT NULL,
+  `zipcode` varchar(255) NOT NULL,
+  `phone_num` varchar(50) NOT NULL,
+  `status_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orderitems`
 --
 
-INSERT INTO `orderitems` (`id`, `orderId`, `pizzaId`, `itemQuantity`) VALUES
-(1, 1, 77, 1);
+INSERT INTO `orderitems` (`order_id`, `track_id`, `cartItemId`, `delivery_date`, `delivery_time`, `address`, `zipcode`, `phone_num`, `status_id`, `payment_id`) VALUES
+(7, 436021, 25, '2024-11-12', '15:15:00', 'Montecillo subd', '17724', '09565535401', 2, 1),
+(8, 436021, 26, '2024-11-12', '15:15:00', 'Montecillo subd', '17724', '09565535401', 3, 1);
 
 -- --------------------------------------------------------
 
@@ -139,6 +153,50 @@ CREATE TABLE `orders` (
 
 INSERT INTO `orders` (`orderId`, `userId`, `address`, `zipCode`, `phoneNo`, `amount`, `paymentMode`, `orderStatus`, `orderDate`) VALUES
 (1, 6, ', ', 222222, 3333333333, 1, '0', '0', '2024-11-06 12:45:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_status`
+--
+
+CREATE TABLE `order_status` (
+  `status_id` int(11) NOT NULL,
+  `status_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_status`
+--
+
+INSERT INTO `order_status` (`status_id`, `status_name`) VALUES
+(1, 'On cart'),
+(2, 'Order Placed'),
+(3, 'Order Confirmed'),
+(4, 'Preparing your Order'),
+(5, 'Your order is on the way!'),
+(6, 'Order Delivered'),
+(7, 'Order Denied'),
+(8, 'Order Cancelled');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_mode`
+--
+
+CREATE TABLE `payment_mode` (
+  `payment_id` int(11) NOT NULL,
+  `payment_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment_mode`
+--
+
+INSERT INTO `payment_mode` (`payment_id`, `payment_name`) VALUES
+(1, 'Cash on delivery'),
+(2, 'Online payment');
 
 -- --------------------------------------------------------
 
@@ -219,7 +277,9 @@ INSERT INTO `users` (`id`, `username`, `firstName`, `lastName`, `email`, `phone`
 (3, 'meow', 'meow', 'meow', 'worwor@g', 1233123123, '0', '$2y$10$jLA1QcpTLJKgMvCkXArOlufMYoWiML1EPE05h2.kCqT3hcUCN/KH6', '2024-10-22 12:43:12'),
 (4, '123', '123', '123', '1232@gmail.com', 1231231231, '0', '$2y$10$f44EmLPeiJtGm638oIE7peqFxb74rFSOk1XyIsNTf6E4qfjRzG6dW', '2024-10-22 14:41:20'),
 (5, 'username', 'fname', 'lname', 'email@gmail.com', 0, '0', '$2y$10$0POGFJsA2vantMqCXMJIc.NC4eYOoMm7pLWKpGDRyqgTe8vGk3oJq', '2024-10-22 16:47:45'),
-(6, 'ChoiSseung', 'Choi', 'Seunghyo', 'CSH@gmail.com', 9123456789, '0', '$2y$10$lXraXlzMrC6.SYLSdpMSkeFuqA6Iilhr6UzSX6xWWs2s2eTCYIg3.', '2024-10-22 16:50:12');
+(6, 'ChoiSseung', 'Choi', 'Seunghyo', 'CSH@gmail.com', 9123456789, '0', '$2y$10$lXraXlzMrC6.SYLSdpMSkeFuqA6Iilhr6UzSX6xWWs2s2eTCYIg3.', '2024-10-22 16:50:12'),
+(8, 'Jcdavid', 'Jc ', 'David', 'jcdavid@gmail.com', 9762096892, '0', '$2y$10$djaiC90MnqEIIlbA.EAQWeju5awonmSTwSO7y9Oh6.zXKHGHx0mvq', '2024-11-12 16:12:24'),
+(9, 'lugo', 'Christian', 'Lugo', 'lugo@gmail.com', 9762096892, '1', '$2y$10$PwOidj4jWgUlWE506pCQ6OOgIvQp/JmiLkTAYKd5cF1So6plOVzsq', '2024-11-12 19:23:59');
 
 -- --------------------------------------------------------
 
@@ -233,17 +293,18 @@ CREATE TABLE `viewcart` (
   `itemQuantity` int(100) NOT NULL,
   `userId` int(11) NOT NULL,
   `addedDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `pizzaSize` varchar(255) DEFAULT NULL
+  `pizzaSize` varchar(255) DEFAULT NULL,
+  `status_id` int(11) NOT NULL DEFAULT 1,
+  `order_size` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `viewcart`
 --
 
-INSERT INTO `viewcart` (`cartItemId`, `pizzaId`, `itemQuantity`, `userId`, `addedDate`, `pizzaSize`) VALUES
-(1, 17, 1, 3, '2024-10-22 12:43:59', ''),
-(2, 18, 1, 3, '2024-10-22 12:44:01', NULL),
-(13, 0, 0, 0, '2024-10-22 19:53:14', NULL);
+INSERT INTO `viewcart` (`cartItemId`, `pizzaId`, `itemQuantity`, `userId`, `addedDate`, `pizzaSize`, `status_id`, `order_size`) VALUES
+(25, 76, 1, 8, '2024-11-12 21:14:25', NULL, 2, 12),
+(26, 75, 1, 8, '2024-11-12 21:15:13', NULL, 8, 12);
 
 --
 -- Indexes for dumped tables
@@ -269,23 +330,28 @@ ALTER TABLE `contactreply`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `deliverydetails`
---
-ALTER TABLE `deliverydetails`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `orderId` (`orderId`);
-
---
 -- Indexes for table `orderitems`
 --
 ALTER TABLE `orderitems`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`order_id`);
 
 --
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`orderId`);
+
+--
+-- Indexes for table `order_status`
+--
+ALTER TABLE `order_status`
+  ADD PRIMARY KEY (`status_id`);
+
+--
+-- Indexes for table `payment_mode`
+--
+ALTER TABLE `payment_mode`
+  ADD PRIMARY KEY (`payment_id`);
 
 --
 -- Indexes for table `pizza`
@@ -336,22 +402,28 @@ ALTER TABLE `contactreply`
   MODIFY `id` int(21) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `deliverydetails`
---
-ALTER TABLE `deliverydetails`
-  MODIFY `id` int(21) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `orderitems`
 --
 ALTER TABLE `orderitems`
-  MODIFY `id` int(21) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
   MODIFY `orderId` int(21) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `order_status`
+--
+ALTER TABLE `order_status`
+  MODIFY `status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `payment_mode`
+--
+ALTER TABLE `payment_mode`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `pizza`
@@ -369,13 +441,13 @@ ALTER TABLE `sitedetail`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(21) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(21) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `viewcart`
 --
 ALTER TABLE `viewcart`
-  MODIFY `cartItemId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `cartItemId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
